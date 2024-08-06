@@ -4,20 +4,77 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+      <header>
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          Register
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
       </header>
+      <main>
+        <p> Hey</p>
+        <form>
+          {/* Zoom Form Details */}
+          <label>
+            First Name:
+            <input 
+            type="text"
+            name="firstName"
+            placeholder="*First Name"
+            required
+            />
+          </label>
+          <label>
+            Last Name:
+            <input 
+            type="text"
+            name="lastName"
+            placeholder="*Last Name"
+            required
+            />
+          </label>
+          <label>
+            Email:
+            <input 
+            type="text"
+            name="Email"
+            placeholder="*Email"
+            required
+            />
+          </label>
+          {/* AuthNet Form Details */}
+          <label>
+            Card Number:
+            <input 
+            type="text"
+            name="cardNumber"
+            placeholder="*Card Number"
+            required
+            />
+          </label>
+          <label>
+            Exp Date:
+            <input 
+            type="text"
+            name="expDate"
+            placeholder="*expDate"
+            required
+            />
+          </label>
+          <label>
+            Card Code:
+            <input 
+            type="text"
+            name="cardCode"
+            placeholder="*Card Code"
+            required
+            />
+          </label>
+          <button
+            type="submit"
+            >
+            Register & Pay
+          </button>
+        </form>
+      </main>
     </div>
   );
 }
