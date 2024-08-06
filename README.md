@@ -1,70 +1,44 @@
-# Getting Started with Create React App
+# zpgdemo
+Setting up your Zoom Payment Gateway:
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+---
 
-## Available Scripts
+## Step 1: Zoom Account Set Up
 
-In the project directory, you can run:
+- Create an account with Zoom's App Marketplace: https://marketplace.zoom.us
+- Create a Server to Server OAuth app
+- on your app's 'App Credentials' page, either take note of (or use this page
+  for reference later) your accountID, Client ID and Client Secret.
+- Set up the app's scopes:
 
-### `npm start`
+If you're setting up for meetings
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- meeting:read:meeting:admin
+  - Allows you to attain information on meetings.
+- meeting:read:list_meetings:admin
+  - Allows you to attain a list of all meetings.
+- meeting:write:registrant:admin
+  - Allows you to register customers to meetings.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+If you're setting up webinars:
 
-### `npm test`
+- webinar:read:webinar:admin
+  - Allows you to attain information on webinars.
+- webinar:read:list_webinars:admin
+  - Allows you to attain a list of all webinars.
+- webinar:write:registrant:admin
+  - Allows you to register customers to webinars.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## Step 2: Authorize.Net Account Set Up
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    NOTE: The same process will be nearly identical for your sandbox account as your merchant account set up.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Create your account or login
+- Once inside your account, navigate to your 'Account' tab
+- Under 'Security Setting' subsection, select the link to your: 'API Credentials
+  & Keys'
+- Either take note of (or use this page for reference later) your:
+  - API Login ID
+  - Transaction Key
