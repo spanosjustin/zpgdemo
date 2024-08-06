@@ -3,20 +3,20 @@ import React, {useEffect, useState } from 'react';
 import './App.css';
 import axios from 'axios';
 
-/*
-const Z_ACCOUNT_ID = process.env.ZOOM_ACCOUNT_ID;
-const Z_CLIENT_ID = process.env.ZOOM_CLIENT_ID;
-const Z_CLIENT_SECRET = process.env.ZOOM_CLIENT_SECRET;
-const Z_AUTH_URL = process.env.ZOOM_AUTH_URL;
-*/
-//const Z_BASE_URL = process.env.ZOOM_API_BASE_URL;
 
+const Z_ACCOUNT_ID = process.env.REACT_APP_ZOOM_ACCOUNT_ID;
+const Z_CLIENT_ID = process.env.REACT_APP_ZOOM_CLIENT_ID;
+const Z_CLIENT_SECRET = process.env.REACT_APP_ZOOM_CLIENT_SECRET;
+const Z_AUTH_URL = process.env.REACT_APP_ZOOM_AUTH_URL;
+const Z_BASE_URL = process.env.REACT_APP_ZOOM_API_BASE_URL;
+
+/*
 const Z_ACCOUNT_ID = 'jndL9khkRrOWgCa9ODk2CA';
 const Z_CLIENT_ID = 'wXjzQC4NTPSOYiJqoo1D0A';
 const Z_CLIENT_SECRET = 'a2kney7NBX5ihiPOEzkQEr5sX1TUvARv';
 const Z_AUTH_URL = '/oauth/token';
 const Z_BASE_URL = '/v2';
-
+*/
 const webinarPrice = 12.99;
 
 // accessing zoom
@@ -118,6 +118,7 @@ function App() {
       </header>
       <main>
         <div>
+        <p>Auth Status: {authStatus}</p>
           <h1>Upcoming Webinars</h1>
           {webinars.map((webinar) => (
             <li key={webinar.id}>
