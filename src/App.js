@@ -1,6 +1,10 @@
 import logo from './logo.svg';
 import './App.css';
 
+const Z_ACCOUNT_ID = process.env.ZOOM_ACCOUNT_ID;
+const Z_CLIENT_ID = process.env.ZOOM_CLIENT_ID;
+const Z_CLIENT_SECRET = process.env.ZOOM_CLIENT_SECRET;
+
 function App() {
   return (
     <div className="App">
