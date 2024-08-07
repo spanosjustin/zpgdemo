@@ -161,6 +161,48 @@ function App() {
     }
     
     try {
+      const captureResponse = await captureAndCharge(webinarPrice, event.target.cardNumber.value, event.target.expDate.value, event.target.cardCode.value);
+
+      // registration
+      if (captureResponse 
+            && captureResponse.transactionResponse 
+              && captureResponse.transactionResponse.responseCode === '1') {
+
+        const response = await axios.post('http://localhost:3005/api/register', {
+          firstName: event.target.firstName.value,
+          lastName: event.target.lastName.value,
+          email: event.target.email.value,
+          webinarId: selectedWebinar.id,
+        });
+
+        console.log('Registration response:', response.data);
+        setErrorMessage('');
+      } else {
+        const errorMsg = "There was an error capturing and charging card.";
+        setErrorMessage(errorMsg);
+        console.log(errorMsg);
+      }
+
+    } catch (error) {
+      const errorMsg = 'An unknown error occurred';
+      if (axios.isAxiosError(error) && error.response) {
+        setErrorMessage(`Registration failed: ${JSON.stringify(error.response.data)}`);
+      } else if (error instanceof Error) {
+        setErrorMessage(`Registration failed: ${error.message}`);
+      }
+      console.log('Action Error:', errorMessage);
+    }
+  };
+  
+  /*
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!selectedWebinar) {
+      console.log("No webinar selected");
+      return;
+    }
+    
+    try {
       console.log("webinar price", webinarPrice, 
                   "Card Num", event.target.cardNumber.value, 
                   "Exp Date", event.target.expDate.value,
@@ -175,8 +217,8 @@ function App() {
               && captureResponse.transactionResponse.responseCode === '1') {
 
         console.log("First name", event.target.firstName.value, "Last name", event.target.lastName.value, "email", event.target.email.value);
-        /*
-        const response = await axios.post(`https://cors-anywhere.herokuapp.com/${process.env.REACT_APP_ZOOM_API_BASE_URL}/webinars/${selectedWebinar.id}/registrants`, {
+        
+        const response = await axios.post(`${process.env.REACT_APP_ZOOM_API_BASE_URL}/webinars/${selectedWebinar.id}/registrants`, {
           first_name: event.target.firstName.value,
           last_name: event.target.lastName.value,
           email: event.target.email.value,
@@ -185,7 +227,7 @@ function App() {
             Authorization: `Bearer ${accessToken}`
           }
         });
-        console.log(response.data); */
+        console.log(response.data);
 
         setErrorMessage('');
       } else {
@@ -195,21 +237,23 @@ function App() {
       }
 
     } catch (error) {
-      let errorMessage = 'An unknown error occurred';
+      const errorMsg = 'An unknown error occurred';
       if (axios.isAxiosError(error) && error.response) {
-        errorMessage = JSON.stringify(error.response.data);
+        setErrorMessage("Registration failed,", JSON.stringify(error.response.data));
       } else if (error instanceof Error) {
-        errorMessage = error.message;
+        setErrorMessage("Registration failed,", error.message);
       }
       console.log('Action Error:', errorMessage);
     }
   };
+  */
 
   return (
     <div className="App">
       <header>
       </header>
       <main>
+      <h1>Zoom Payment Gateway</h1>
       {errorMessage && <p className="error-message">{errorMessage}</p>}
       {/*<p>Auth Status: {authStatus}</p>*/}
       <div className="main-container">

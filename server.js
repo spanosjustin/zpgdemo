@@ -6,49 +6,72 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3005;
 
-app.use(cors());
+// Configure CORS to allow requests from client application
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  methods: 'POST',
+  credentials: true,
+  optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
-// Endpoint to get Zoom access token
-app.post('/api/auth', async (req, res) => {
+// Endpoint to register for a Zoom webinar
+app.post('/api/register', async (req, res) => {
+  const { firstName, lastName, email, webinarId } = req.body;
+
+  console.log('Received registration request with data:', { firstName, lastName, email, webinarId });
+
   try {
-    const response = await axios.post('https://zoom.us/oauth/token', null, {
+    // Get Zoom access token
+    const tokenResponse = await axios.post('https://zoom.us/oauth/token', null, {
       params: {
-        grant_type: 'authorization_code',
+        grant_type: 'account_credentials',
         account_id: process.env.REACT_APP_ZOOM_ACCOUNT_ID,
       },
       auth: {
         username: process.env.REACT_APP_ZOOM_CLIENT_ID,
         password: process.env.REACT_APP_ZOOM_CLIENT_SECRET,
       },
+      timeout: 10000 // Increase timeout to 10 seconds
     });
-    console.log('Access Token Response:', response.data); // Debug log
-    res.json(response.data);
-  } catch (error) {
-    console.error('Error fetching access token:', error.response ? error.response.data : error.message); // Debug log
-    res.status(error.response ? error.response.status : 500).json(error.response ? error.response.data : { message: error.message });
-  }
-});
 
-// Endpoint to get webinars
-app.get('/api/webinars', async (req, res) => {
-  const accessToken = req.headers.authorization && req.headers.authorization.split(' ')[1];
-  if (!accessToken) {
-    return res.status(401).json({ message: 'Access token is missing or invalid' });
-  }
+    const accessToken = tokenResponse.data.access_token;
+    console.log('Zoom Access Token:', accessToken);
 
-  try {
-    console.log('Using Access Token:', accessToken); // Debug log
-    const response = await axios.get('https://api.zoom.us/v2/users/me/webinars', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
+    // Register user for the webinar
+    const registrationResponse = await axios.post(
+      `https://api.zoom.us/v2/webinars/${webinarId}/registrants`, // Corrected the URL
+      {
+        first_name: firstName,
+        last_name: lastName,
+        email: email,
       },
-    });
-    console.log('Fetched Webinars:', response.data); // Debug log
-    res.json(response.data);
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        },
+        timeout: 10000 // Increase timeout to 10 seconds
+      }
+    );
+
+    console.log('Zoom Registration Response:', registrationResponse.data);
+    res.json(registrationResponse.data);
   } catch (error) {
-    console.error('Error fetching webinars:', error.response ? error.response.data : error.message); // Debug log
-    res.status(error.response ? error.response.status : 500).json(error.response ? error.response.data : { message: error.message });
+    if (error.response) {
+      // Server responded with a status other than 2xx
+      console.error('Error during registration:', error.response.data); // Detailed error message
+      res.status(error.response.status).json(error.response.data);
+    } else if (error.request) {
+      // Request was made but no response received
+      console.error('No response received:', error.request);
+      res.status(500).json({ message: 'No response received from Zoom API' });
+    } else {
+      // Something else happened in making the request
+      console.error('Error during registration:', error.message);
+      res.status(500).json({ message: error.message });
+    }
   }
 });
 
