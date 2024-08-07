@@ -10,6 +10,8 @@ const Z_CLIENT_SECRET = process.env.REACT_APP_ZOOM_CLIENT_SECRET;
 const Z_AUTH_URL = process.env.REACT_APP_ZOOM_AUTH_URL;
 const Z_BASE_URL = process.env.REACT_APP_ZOOM_API_BASE_URL;
 
+const test_url = process.env.REACT_APP_ZOOM_test_URL;
+
 const webinarPrice = 12.99;
 
 // accessing zoom
@@ -57,8 +59,10 @@ export async function getWebinars(accessToken) {
       },
     });
     const webinars = response.data.webinars;
-    console.log('Webinars:', webinars);
-    return response.data.webinars;
+    const now = new Date();
+    const filteredWebinars = webinars.filter(webinar => new Date(webinar.start_time) >= now);
+    //console.log('Webinars:', webinars);
+    return filteredWebinars;
   } catch (error) {
     let errorMessage = 'Failed to fetch webinars';
     if (axios.isAxiosError(error)) {
@@ -74,22 +78,26 @@ export async function getWebinars(accessToken) {
   }
 }
 
+
 function App() {
   const [webinars, setWebinars] = useState([]);
   const [authStatus, setAuthStatus] = useState(null);
+  const [selectedWebinar, setSelectedWebinar] = useState(null);
+  const [accessToken, setAccessToken] = useState(null);
 
   useEffect(() => {
     async function fetchWebinars() {
       try {
         console.log("Fetching access token...");
         const token = await getZoomAccessToken();
+        setAccessToken(token);
         setAuthStatus(token ? 'Authenticated' : 'Authentication failed');
         if (token) {
           console.log("Fetching webinars...");
           const fetchedWebinars = await getWebinars(token);
           setWebinars(fetchedWebinars);
         }
-      } catch (errro) {
+      } catch (error) {
         setAuthStatus('Authentication failed');
       }
     }
@@ -97,31 +105,74 @@ function App() {
     fetchWebinars();
   }, []);
 
+  const handleWebinarClick = (webinar) => {
+    setSelectedWebinar(webinar);
+    //console.log(selectedWebinar);
+  }
+
+  // subtmit
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("Submitted");
-  }
+    if (!selectedWebinar) {
+      console.log("No webinar selected");
+      return;
+    }
+    
+    // capture and charge
+    /*  INSERT CAPTURE AND CHARGE HERE  */
+
+    //console.log("Submit", selectedWebinar);
+    //console.log(event.target.firstName.value, event.target.lastName.value, event.target.email.value);
+    // Registration logic
+    try {
+      console.log("First name", event.target.firstName.value, "Last name", event.target.lastName.value, "Last name", event.target.email.value);
+      /*
+      const response = await axios.post(`https://cors-anywhere.herokuapp.com/${process.env.REACT_APP_ZOOM_API_BASE_URL}/webinars/${selectedWebinar.id}/registrants`, {
+        first_name: event.target.firstName.value,
+        last_name: event.target.lastName.value,
+        email: event.target.email.value,
+      }, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+      console.log(response.data); */
+    } catch (error) {
+      let errorMessage = 'An unknown error occurred';
+      if (axios.isAxiosError(error) && error.response) {
+        errorMessage = JSON.stringify(error.response.data);
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      console.log('Action Error:', errorMessage);
+    }
+  };
 
   return (
     <div className="App">
       <header>
-        <p>
-          Register
-        </p>
       </header>
       <main>
-        <div>
-        <p>Auth Status: {authStatus}</p>
+      <p>Auth Status: {authStatus}</p>
+      <div className="main-container">
+        <div className="webinar-list-container">
           <h1>Upcoming Webinars</h1>
+          <ul className="webinar-list">
           {webinars.map((webinar) => (
-            <li key={webinar.id}>
+            <li 
+              key={webinar.id} 
+              className={`webinar-item ${webinar.topic && webinar.start_time && webinarPrice === webinar.id ? 'selected' : ''}`}
+              onClick={() => handleWebinarClick(webinar)}
+              >
               <h3>{webinar.topic}</h3>
               <p>Start Time: {webinar.start_time}</p>
               <p>Price: {webinarPrice}</p>
             </li>
           ))}
+          </ul>
         </div>
-        <form>
+        <div className="form-container">
+        <form onSubmit={handleSubmit}>
           {/* Zoom Form Details */}
           <label>
             First Name:
@@ -145,7 +196,7 @@ function App() {
             Email:
             <input 
             type="text"
-            name="Email"
+            name="email"
             placeholder="*Email"
             required
             />
@@ -184,6 +235,8 @@ function App() {
             Register & Pay
           </button>
         </form>
+        </div>
+        </div>
       </main>
     </div>
   );
