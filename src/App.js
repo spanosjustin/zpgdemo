@@ -3,14 +3,18 @@ import React, {useEffect, useState } from 'react';
 import './App.css';
 import axios from 'axios';
 
-
+// Zoom API info
 const Z_ACCOUNT_ID = process.env.REACT_APP_ZOOM_ACCOUNT_ID;
 const Z_CLIENT_ID = process.env.REACT_APP_ZOOM_CLIENT_ID;
 const Z_CLIENT_SECRET = process.env.REACT_APP_ZOOM_CLIENT_SECRET;
 const Z_AUTH_URL = process.env.REACT_APP_ZOOM_AUTH_URL;
 const Z_BASE_URL = process.env.REACT_APP_ZOOM_API_BASE_URL;
 
-const test_url = process.env.REACT_APP_ZOOM_test_URL;
+// Authorize.Net API info
+const AUTH_LOGIN_ID = process.env.REACT_APP_AUTHORIZE_NET_LOGIN_ID;
+const AUTH_KEY = process.env.REACT_APP_AUTHORIZE_NET_KEY;
+const AUTH_CLIENT_KEY = process.env.REACT_APP_AUTHORIZE_NET_CLIENT_KEY;
+const AUTH_BASE_URL = process.env.REACT_APP_AUTHORIZE_NET_BASE_URL;
 
 const webinarPrice = 12.99;
 
@@ -76,8 +80,45 @@ export async function getWebinars(accessToken) {
     console.error('Error fetching webinars:', errorMessage);
     throw new Error(errorMessage);
   }
-}
+};
 
+// capturing and charging card function
+export const captureAndCharge = async (
+  amount, 
+  cardNumber,
+  expDate,
+  cardCode
+) => {
+  const payload = {
+    createTransactionRequest: {
+      merchantAuthentication: {
+          name: AUTH_LOGIN_ID,
+          transactionKey: AUTH_KEY,
+        },
+        transactionRequest: {
+          transactionType: 'authCaptureTransaction',
+          amount: amount,
+          payment: {
+              creditCard: {
+                  cardNumber: cardNumber,
+                  expirationDate: expDate,
+                  cardCode: cardCode,
+          },
+        },
+      },
+    },
+  };
+  console.log('Authorize.Net Payload:', payload);
+
+  try {
+    const response = await axios.post(AUTH_BASE_URL, payload);
+    console.log('Authorize.net Response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.log('Error capturing and charging catf:', error);
+    throw error;
+  } 
+};
 
 function App() {
   const [webinars, setWebinars] = useState([]);
@@ -125,18 +166,31 @@ function App() {
     //console.log(event.target.firstName.value, event.target.lastName.value, event.target.email.value);
     // Registration logic
     try {
-      console.log("First name", event.target.firstName.value, "Last name", event.target.lastName.value, "Last name", event.target.email.value);
-      /*
-      const response = await axios.post(`https://cors-anywhere.herokuapp.com/${process.env.REACT_APP_ZOOM_API_BASE_URL}/webinars/${selectedWebinar.id}/registrants`, {
-        first_name: event.target.firstName.value,
-        last_name: event.target.lastName.value,
-        email: event.target.email.value,
-      }, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      });
-      console.log(response.data); */
+      console.log("webinar price", webinarPrice, 
+                  "Card Num", event.target.cardNumber.value, 
+                  "Exp Date", event.target.expDate.value,
+                  "Code", event.target.cardCode.value,
+                  );
+      const captureResponse = await captureAndCharge(webinarPrice, event.target.cardNumber.value, event.target.expDate.value, event.target.cardCode.value);
+
+      if (captureResponse 
+            && captureResponse.transactionResponse 
+              && captureResponse.transactionResponse.responseCode === '1') {
+
+        console.log("First name", event.target.firstName.value, "Last name", event.target.lastName.value, "email", event.target.email.value);
+        /*
+        const response = await axios.post(`https://cors-anywhere.herokuapp.com/${process.env.REACT_APP_ZOOM_API_BASE_URL}/webinars/${selectedWebinar.id}/registrants`, {
+          first_name: event.target.firstName.value,
+          last_name: event.target.lastName.value,
+          email: event.target.email.value,
+        }, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+        console.log(response.data); */
+      }
+
     } catch (error) {
       let errorMessage = 'An unknown error occurred';
       if (axios.isAxiosError(error) && error.response) {
@@ -208,7 +262,7 @@ function App() {
             type="text"
             name="cardNumber"
             placeholder="*Card Number"
-            //required
+            required
             />
           </label>
           <label>
@@ -217,7 +271,7 @@ function App() {
             type="text"
             name="expDate"
             placeholder="*expDate"
-            //required
+            required
             />
           </label>
           <label>
@@ -226,7 +280,7 @@ function App() {
             type="text"
             name="cardCode"
             placeholder="*Card Code"
-            //required
+            required
             />
           </label>
           <button
