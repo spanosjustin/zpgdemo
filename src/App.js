@@ -125,6 +125,7 @@ function App() {
   const [authStatus, setAuthStatus] = useState(null);
   const [selectedWebinar, setSelectedWebinar] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     async function fetchWebinars() {
@@ -159,20 +160,16 @@ function App() {
       return;
     }
     
-    // capture and charge
-    /*  INSERT CAPTURE AND CHARGE HERE  */
-
-    //console.log("Submit", selectedWebinar);
-    //console.log(event.target.firstName.value, event.target.lastName.value, event.target.email.value);
-    // Registration logic
     try {
       console.log("webinar price", webinarPrice, 
                   "Card Num", event.target.cardNumber.value, 
                   "Exp Date", event.target.expDate.value,
                   "Code", event.target.cardCode.value,
                   );
+      // capture and charge
       const captureResponse = await captureAndCharge(webinarPrice, event.target.cardNumber.value, event.target.expDate.value, event.target.cardCode.value);
 
+      // registration
       if (captureResponse 
             && captureResponse.transactionResponse 
               && captureResponse.transactionResponse.responseCode === '1') {
@@ -189,6 +186,12 @@ function App() {
           }
         });
         console.log(response.data); */
+
+        setErrorMessage('');
+      } else {
+        const errorMsg = "There was an error capturing and charging card.";
+        setErrorMessage(errorMsg);
+        console.log(errorMsg);
       }
 
     } catch (error) {
@@ -207,7 +210,8 @@ function App() {
       <header>
       </header>
       <main>
-      <p>Auth Status: {authStatus}</p>
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
+      {/*<p>Auth Status: {authStatus}</p>*/}
       <div className="main-container">
         <div className="webinar-list-container">
           <h1>Upcoming Webinars</h1>
