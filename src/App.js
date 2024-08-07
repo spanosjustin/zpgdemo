@@ -13,7 +13,7 @@ const Z_BASE_URL = process.env.REACT_APP_ZOOM_API_BASE_URL;
 // Authorize.Net API info
 const AUTH_LOGIN_ID = process.env.REACT_APP_AUTHORIZE_NET_LOGIN_ID;
 const AUTH_KEY = process.env.REACT_APP_AUTHORIZE_NET_KEY;
-const AUTH_CLIENT_KEY = process.env.REACT_APP_AUTHORIZE_NET_CLIENT_KEY;
+//const AUTH_CLIENT_KEY = process.env.REACT_APP_AUTHORIZE_NET_CLIENT_KEY;
 const AUTH_BASE_URL = process.env.REACT_APP_AUTHORIZE_NET_BASE_URL;
 
 const webinarPrice = 12.99;
