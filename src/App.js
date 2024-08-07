@@ -1,4 +1,5 @@
 import React, {useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 //import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
@@ -126,6 +127,7 @@ function App() {
   const [selectedWebinar, setSelectedWebinar] = useState(null);
   const [accessToken, setAccessToken] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchWebinars() {
@@ -177,6 +179,7 @@ function App() {
 
         console.log('Registration response:', response.data);
         setErrorMessage('');
+        navigate('/success');
       } else {
         const errorMsg = "There was an error capturing and charging card.";
         setErrorMessage(errorMsg);
