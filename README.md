@@ -45,7 +45,7 @@ If you're setting up webinars:
 
 ---
 
-DON"T FORGET
+DON'T FORGET
 To set up the proxy server before running your local host for demos
 - node server.js
 Then
